@@ -25,7 +25,6 @@ jobs:
         with:
           payload: |
             {
-              "text": "🔔 PR ${{ github.event.action }}",
               "blocks": [
                 {
                   "type": "header",
@@ -36,24 +35,19 @@ jobs:
                 },
                 {
                   "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*제목*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*작성자*\n${{ github.event.pull_request.user.login }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*브랜치*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*상태*\n${{ steps.state.outputs.label }}"
-                    }
-                  ]
+                  "text": { "type": "mrkdwn", "text": "*제목*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>" }
+                },
+                {
+                  "type": "section",
+                  "text": { "type": "mrkdwn", "text": "*작성자*\n${{ github.event.pull_request.user.login }}" }
+                },
+                {
+                  "type": "section",
+                  "text": { "type": "mrkdwn", "text": "*브랜치*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`" }
+                },
+                {
+                  "type": "section",
+                  "text": { "type": "mrkdwn", "text": "*상태*\n${{ steps.state.outputs.label }}" }
                 }
               ]
             }
