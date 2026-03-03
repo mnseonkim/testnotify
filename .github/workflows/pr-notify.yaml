@@ -27,7 +27,6 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "🔔 PR ${{ github.event.action }}",
               "blocks": [
                 {
                   "type": "header",
