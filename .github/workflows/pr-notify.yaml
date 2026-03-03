@@ -9,6 +9,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set PR state
+        id: state
+        run: |
+          if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            echo "label=✅ Merged" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.action }}" = "closed" ]; then
+            echo "label=❌ Closed" >> $GITHUB_OUTPUT
+          else
+            echo "label=🟡 Open" >> $GITHUB_OUTPUT
+          fi
+
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v1.24.0
         with:
@@ -40,7 +51,7 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*상태*\n${{ github.event.pull_request.merged == true && '✅ Merged' || github.event.action == 'closed' && '❌ Closed' || '🟡 Open' }}"
+                      "text": "*상태*\n${{ steps.state.outputs.label }}"
                     }
                   ]
                 }
