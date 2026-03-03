@@ -25,6 +25,7 @@ jobs:
         with:
           payload: |
             {
+              "text": "🔔 PR ${{ github.event.action }}",
               "blocks": [
                 {
                   "type": "header",
