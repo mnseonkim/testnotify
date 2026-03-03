@@ -1,0 +1,49 @@
+name: PR Slack Notify
+
+on:
+  pull_request:
+    types: [opened, review_requested]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🔔 PR ${{ github.event.action }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*제목*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*작성자*\n${{ github.event.pull_request.user.login }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*브랜치*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*상태*\n${{ github.event.pull_request.merged == true && '✅ Merged' || github.event.action == 'closed' && '❌ Closed' || '🟡 Open' }}"
+                    }
+                  ]
+                }
+              ]
+            }
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
