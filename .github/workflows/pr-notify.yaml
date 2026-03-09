@@ -9,13 +9,17 @@ jobs:
     if: github.event.action == 'opened'
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare PR body
+      - name: Prepare PR data
         id: vars
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
+          REVIEWERS_JSON: ${{ toJSON(github.event.pull_request.requested_reviewers) }}
         run: |
           body=$(echo "$PR_BODY" | head -c 280 | tr '\n\r' '  ' | sed 's/"/\\"/g')
           echo "body=${body:-(説明なし)}" >> $GITHUB_OUTPUT
+
+          reviewers=$(echo "$REVIEWERS_JSON" | jq -r '[.[].login | "<https://github.com/\(.)|@\(.)>"] | join(", ")')
+          echo "reviewers=${reviewers:-(なし)}" >> $GITHUB_OUTPUT
 
       - name: Send Slack Notification (PR Opened)
         uses: slackapi/slack-github-action@v2.0.0
@@ -29,7 +33,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "<@U0AJV6A54JU>  *${{ github.event.pull_request.user.login }}* opened pull request <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }}>"
+                    "text": "<@U0AJV6A54JU>  *${{ github.event.pull_request.user.login }}* created pull request <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }}>"
                   }
                 }
               ],
@@ -55,15 +59,38 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
+                        "text": "*<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>*"
                       }
                     },
                     {
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "${{ steps.vars.outputs.body }}"
+                        "text": "`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
                       }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*Description*\n${{ steps.vars.outputs.body }}"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*Reviewers*\n${{ steps.vars.outputs.reviewers }}"
+                      }
+                    },
+                    {
+                      "type": "context",
+                      "elements": [
+                        {
+                          "type": "mrkdwn",
+                          "text": ":octocat: ${{ github.repository }}"
+                        }
+                      ]
                     },
                     {
                       "type": "actions",
@@ -75,7 +102,7 @@ jobs:
                             "text": "Review"
                           },
                           "url": "${{ github.event.pull_request.html_url }}"
-                        }
+                        },
                       ]
                     }
                   ]
@@ -125,8 +152,24 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
+                        "text": "*<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>*"
                       }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
+                      }
+                    },
+                    {
+                      "type": "context",
+                      "elements": [
+                        {
+                          "type": "mrkdwn",
+                          "text": ":octocat: ${{ github.repository }}"
+                        }
+                      ]
                     },
                     {
                       "type": "actions",
