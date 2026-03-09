@@ -9,23 +9,6 @@ jobs:
     if: github.event.action == 'opened'
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare PR body
-        id: vars
-        env:
-          PR_BODY: ${{ github.event.pull_request.body }}
-        run: |
-          body=$(echo "$PR_BODY" | \
-            sed 's/\*\*\([^*]*\)\*\*/*\1*/g' | \
-            sed 's/^- \[x\] /✅ /g' | \
-            sed 's/^- \[ \] /☐ /g' | \
-            sed 's/^- /• /g' | \
-            sed 's/^\* /• /g' | \
-            head -c 200 | \
-            tr '\n\r' ' ' | \
-            sed 's/  */ /g' | \
-            sed 's/"/\\"/g')
-          echo "body=${body:-(説明なし)}" >> $GITHUB_OUTPUT
-
       - name: Send Slack Notification (PR Opened)
         uses: slackapi/slack-github-action@v2.0.0
         with:
@@ -57,7 +40,27 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*\n${{ steps.vars.outputs.body }}"
+                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Branch*\n`${{ github.event.pull_request.head.ref }}`"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Changes*\n`+${{ github.event.pull_request.additions }}  -${{ github.event.pull_request.deletions }}`"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*Reviewer*\n<@U0AJV6A54JU>"
                       }
                     },
                     {
@@ -110,8 +113,21 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
+                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*"
                       }
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Branch*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Changes*\n`+${{ github.event.pull_request.additions }}  -${{ github.event.pull_request.deletions }}`"
+                        }
+                      ]
                     },
                     {
                       "type": "actions",
