@@ -14,16 +14,21 @@ jobs:
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
           REVIEWERS_JSON: ${{ toJSON(github.event.pull_request.requested_reviewers) }}
-          LABELS_JSON: ${{ toJSON(github.event.pull_request.labels) }}
         run: |
-          body=$(echo "$PR_BODY" | head -c 280 | tr '\n\r' '  ' | sed 's/"/\\"/g')
+          body=$(echo "$PR_BODY" | \
+            sed 's/\*\*\([^*]*\)\*\*/*\1*/g' | \
+            sed 's/^- \[x\] /✅ /g' | \
+            sed 's/^- \[ \] /☐ /g' | \
+            sed 's/^- /• /g' | \
+            sed 's/^\* /• /g' | \
+            head -c 200 | \
+            tr '\n\r' ' ' | \
+            sed 's/  */ /g' | \
+            sed 's/"/\\"/g')
           echo "body=${body:-(説明なし)}" >> $GITHUB_OUTPUT
 
-          reviewers=$(echo "$REVIEWERS_JSON" | jq -r '[.[].login | "<https://github.com/\(.)|@\(.)>"] | join(", ")')
+          reviewers=$(echo "$REVIEWERS_JSON" | jq -r 'map("<https://github.com/\(.login)|@\(.login)>") | join(", ")')
           echo "reviewers=${reviewers:-(なし)}" >> $GITHUB_OUTPUT
-
-          labels=$(echo "$LABELS_JSON" | jq -r '[.[].name] | join(", ")')
-          echo "labels=${labels:-(なし)}" >> $GITHUB_OUTPUT
 
       - name: Send Slack Notification (PR Opened)
         uses: slackapi/slack-github-action@v2.0.0
@@ -68,25 +73,10 @@ jobs:
                     },
                     {
                       "type": "section",
-                      "fields": [
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Reviewers*\n${{ steps.vars.outputs.reviewers }}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Labels*\n${{ steps.vars.outputs.labels }}"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "context",
-                      "elements": [
-                        {
-                          "type": "mrkdwn",
-                          "text": ":octocat: ${{ github.repository }}"
-                        }
-                      ]
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*Reviewers*\n${{ steps.vars.outputs.reviewers }}"
+                      }
                     },
                     {
                       "type": "actions",
@@ -150,15 +140,6 @@ jobs:
                         "type": "mrkdwn",
                         "text": "`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
                       }
-                    },
-                    {
-                      "type": "context",
-                      "elements": [
-                        {
-                          "type": "mrkdwn",
-                          "text": ":octocat: ${{ github.repository }}"
-                        }
-                      ]
                     },
                     {
                       "type": "actions",
