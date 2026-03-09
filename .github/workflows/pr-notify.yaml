@@ -26,26 +26,33 @@ jobs:
                 },
                 {
                   "type": "section",
-                  "fields": [
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>*"
+                  }
+                },
+                {
+                  "type": "context",
+                  "elements": [
                     {
-                      "type": "mrkdwn",
-                      "text": "*タイトル*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                      "type": "image",
+                      "image_url": "${{ github.event.pull_request.user.avatar_url }}",
+                      "alt_text": "${{ github.event.pull_request.user.login }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*作成者*\n${{ github.event.pull_request.user.login }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*マージ先*\n`${{ github.event.pull_request.base.ref }}`"
+                      "text": "${{ github.event.pull_request.user.login }}  ·  → `${{ github.event.pull_request.base.ref }}`"
                     }
                   ]
+                },
+                {
+                  "type": "divider"
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "<@[PM_MEMBERID]>"
+                    "text": "<@U0AJV6A54JU>"
                   }
                 }
               ]
@@ -72,26 +79,33 @@ jobs:
                 },
                 {
                   "type": "section",
-                  "fields": [
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>*"
+                  }
+                },
+                {
+                  "type": "context",
+                  "elements": [
                     {
-                      "type": "mrkdwn",
-                      "text": "*タイトル*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                      "type": "image",
+                      "image_url": "${{ github.event.pull_request.merged_by.avatar_url }}",
+                      "alt_text": "${{ github.event.pull_request.merged_by.login }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*マージした人*\n${{ github.event.pull_request.merged_by.login }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*マージ先*\n`${{ github.event.pull_request.base.ref }}`"
+                      "text": "${{ github.event.pull_request.merged_by.login }}  ·  → `${{ github.event.pull_request.base.ref }}`"
                     }
                   ]
+                },
+                {
+                  "type": "divider"
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "<@[MEMBERID_1]> <@[MEMBERID_2]> <@[MEMBERID_3]>"
+                    "text": "<@U0AJV6A54JU> <@U0AJV6A54JU> <@U0AJV6A54JU>"
                   }
                 }
               ]
