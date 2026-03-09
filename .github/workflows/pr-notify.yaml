@@ -105,7 +105,7 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "<@${{ vars.SLACK_TEAM_MEMBER_1 }}> <@${{ vars.SLACK_TEAM_MEMBER_2 }}>"
+                        "text": "*Pull required*\n<@${{ vars.SLACK_TEAM_MEMBER_1 }}> <@${{ vars.SLACK_TEAM_MEMBER_2 }}>"
                       }
                     }
                   ]
