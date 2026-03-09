@@ -2,25 +2,14 @@ name: PR Slack Notify
 
 on:
   pull_request:
-    types: [opened, review_requested]
+    types: [opened, closed]
 
 jobs:
-  notify:
+  notify-opened:
+    if: github.event.action == 'opened'
     runs-on: ubuntu-latest
-
     steps:
-      - name: Set PR state
-        id: state
-        run: |
-          if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
-            echo "label=✅ Merged" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event.action }}" = "closed" ]; then
-            echo "label=❌ Closed" >> $GITHUB_OUTPUT
-          else
-            echo "label=🟡 Open" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Send Slack Notification
+      - name: Send Slack Notification (PR Opened)
         uses: slackapi/slack-github-action@v2.0.0
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -32,24 +21,78 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "🔔 PR ${{ github.event.action }}"
+                    "text": "🟡 PR Opened"
                   }
                 },
                 {
                   "type": "section",
-                  "text": { "type": "mrkdwn", "text": "*제목*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>" }
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*タイトル*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*作成者*\n${{ github.event.pull_request.user.login }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*マージ先*\n`${{ github.event.pull_request.base.ref }}`"
+                    }
+                  ]
                 },
                 {
                   "type": "section",
-                  "text": { "type": "mrkdwn", "text": "*작성자*\n${{ github.event.pull_request.user.login }}" }
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<@[PM_MEMBERID]>"
+                  }
+                }
+              ]
+            }
+
+  notify-merged:
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack Notification (PR Merged)
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "✅ PR Merged"
+                  }
                 },
                 {
                   "type": "section",
-                  "text": { "type": "mrkdwn", "text": "*브랜치*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`" }
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*タイトル*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*マージした人*\n${{ github.event.pull_request.merged_by.login }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*マージ先*\n`${{ github.event.pull_request.base.ref }}`"
+                    }
+                  ]
                 },
                 {
                   "type": "section",
-                  "text": { "type": "mrkdwn", "text": "*상태*\n${{ steps.state.outputs.label }}" }
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<@[MEMBERID_1]> <@[MEMBERID_2]> <@[MEMBERID_3]>"
+                  }
                 }
               ]
             }
