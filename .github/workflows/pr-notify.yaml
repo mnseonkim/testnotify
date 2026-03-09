@@ -91,6 +91,13 @@ jobs:
             {
               "blocks": [
                 {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<@U0AJV6A54JU>"
+                  }
+                },
+                {
                   "type": "context",
                   "elements": [
                     {
@@ -100,7 +107,7 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "Pull request merged by *<${{ github.event.pull_request.merged_by.html_url }}|${{ github.event.pull_request.merged_by.login }}>*"
+                      "text": "*<${{ github.event.pull_request.merged_by.html_url }}|${{ github.event.pull_request.merged_by.login }}>* merged pull request *<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }}>*"
                     }
                   ]
                 }
@@ -125,7 +132,7 @@ jobs:
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*Changes*\n`+${{ github.event.pull_request.additions }}  -${{ github.event.pull_request.deletions }}`"
+                          "text": "*Changes*\n${{ github.event.pull_request.changed_files }} files  `+${{ github.event.pull_request.additions }}  -${{ github.event.pull_request.deletions }}`"
                         }
                       ]
                     },
