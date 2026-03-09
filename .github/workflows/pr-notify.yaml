@@ -1,5 +1,13 @@
 name: PR Slack Notify
 
+# ─────────────────────────────────────────────────────────────
+# Required GitHub Repository Variables (Settings → Variables → Actions):
+#
+#   SLACK_PM_ID          → PM's Slack user ID         (e.g. U0AJV6A54JU)
+#   SLACK_TEAM_MEMBER_1  → Team member 1 Slack user ID (e.g. U1BCD123456)
+#   SLACK_TEAM_MEMBER_2  → Team member 2 Slack user ID (e.g. U2EFG789012)
+# ─────────────────────────────────────────────────────────────
+
 on:
   pull_request:
     types: [opened, closed]
@@ -60,7 +68,7 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*Reviewer*\n<@U0AJV6A54JU>"
+                        "text": "*Reviewer*\n<@${{ vars.SLACK_PM_ID }}>"
                       }
                     },
                     {
@@ -94,7 +102,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "<@U0AJV6A54JU>"
+                    "text": "<@${{ vars.SLACK_TEAM_MEMBER_1 }}> <@${{ vars.SLACK_TEAM_MEMBER_2 }}>"
                   }
                 },
                 {
