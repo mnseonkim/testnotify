@@ -35,7 +35,7 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "Pull request opened by *<${{ github.event.pull_request.user.html_url }}|${{ github.event.pull_request.user.login }}>*"
+                      "text": "*<${{ github.event.pull_request.user.html_url }}|${{ github.event.pull_request.user.login }}>* opened a pull request"
                     }
                   ]
                 }
@@ -76,13 +76,6 @@ jobs:
             {
               "blocks": [
                 {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "<@${{ vars.SLACK_TEAM_MEMBER_1 }}> <@${{ vars.SLACK_TEAM_MEMBER_2 }}>"
-                  }
-                },
-                {
                   "type": "context",
                   "elements": [
                     {
@@ -92,7 +85,7 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*<${{ github.event.pull_request.merged_by.html_url }}|${{ github.event.pull_request.merged_by.login }}>* merged pull request *<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }}>*"
+                      "text": "*<${{ github.event.pull_request.merged_by.html_url }}|${{ github.event.pull_request.merged_by.login }}>* merged a pull request"
                     }
                   ]
                 }
@@ -106,6 +99,13 @@ jobs:
                       "text": {
                         "type": "mrkdwn",
                         "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "<@${{ vars.SLACK_TEAM_MEMBER_1 }}> <@${{ vars.SLACK_TEAM_MEMBER_2 }}>"
                       }
                     }
                   ]
