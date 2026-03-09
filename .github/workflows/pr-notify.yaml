@@ -3,7 +3,7 @@ name: PR Slack Notify
 # ─────────────────────────────────────────────────────────────
 # Required GitHub Repository Variables (Settings → Variables → Actions):
 #
-#   SLACK_REVIEWER_ID          → PM's Slack user ID         (e.g. U0AJV6A54JU)
+#   SLACK_REVIEWER_ID    → REVIEWER's Slack user ID (e.g. U0AJV6A54JU)
 #   SLACK_TEAM_MEMBER_1  → Team member 1 Slack user ID (e.g. U1BCD123456)
 #   SLACK_TEAM_MEMBER_2  → Team member 2 Slack user ID (e.g. U2EFG789012)
 # ─────────────────────────────────────────────────────────────
@@ -53,33 +53,10 @@ jobs:
                     },
                     {
                       "type": "section",
-                      "fields": [
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Branch*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Changes*\n${{ github.event.pull_request.changed_files }} files  `+${{ github.event.pull_request.additions }}  -${{ github.event.pull_request.deletions }}`"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "section",
                       "text": {
                         "type": "mrkdwn",
                         "text": "*Reviewer*\n<@${{ vars.SLACK_REVIEWER_ID }}>"
                       }
-                    },
-                    {
-                      "type": "actions",
-                      "elements": [
-                        {
-                          "type": "button",
-                          "text": { "type": "plain_text", "text": "Review" },
-                          "url": "${{ github.event.pull_request.html_url }}"
-                        }
-                      ]
                     }
                   ]
                 }
@@ -128,18 +105,8 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*\n\n*Branch*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
+                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*"
                       }
-                    },
-                    {
-                      "type": "actions",
-                      "elements": [
-                        {
-                          "type": "button",
-                          "text": { "type": "plain_text", "text": "View PR" },
-                          "url": "${{ github.event.pull_request.html_url }}"
-                        }
-                      ]
                     }
                   ]
                 }
