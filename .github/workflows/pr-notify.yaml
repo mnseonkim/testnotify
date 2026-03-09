@@ -9,6 +9,14 @@ jobs:
     if: github.event.action == 'opened'
     runs-on: ubuntu-latest
     steps:
+      - name: Prepare PR body
+        id: vars
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          body=$(echo "$PR_BODY" | head -c 280 | tr '\n\r' '  ' | sed 's/"/\\"/g')
+          echo "body=${body:-(説明なし)}" >> $GITHUB_OUTPUT
+
       - name: Send Slack Notification (PR Opened)
         uses: slackapi/slack-github-action@v2.0.0
         with:
@@ -21,7 +29,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "<@U0AJV6A54JU>"
+                    "text": "<@U0AJV6A54JU>  *${{ github.event.pull_request.user.login }}* opened pull request <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }}>"
                   }
                 }
               ],
@@ -39,7 +47,7 @@ jobs:
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*${{ github.event.pull_request.user.login }}*  ✏️ opened a pull request"
+                          "text": "*${{ github.event.pull_request.user.login }}*"
                         }
                       ]
                     },
@@ -51,13 +59,20 @@ jobs:
                       }
                     },
                     {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "${{ steps.vars.outputs.body }}"
+                      }
+                    },
+                    {
                       "type": "actions",
                       "elements": [
                         {
                           "type": "button",
                           "text": {
                             "type": "plain_text",
-                            "text": "🔗 View on GitHub"
+                            "text": "Review"
                           },
                           "url": "${{ github.event.pull_request.html_url }}"
                         }
@@ -84,7 +99,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "<@U0AJV6A54JU> <@U0AJV6A54JU> <@U0AJV6A54JU>"
+                    "text": "<@U0AJV6A54JU> <@U0AJV6A54JU> <@U0AJV6A54JU>  *${{ github.event.pull_request.merged_by.login }}* merged pull request <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }}>"
                   }
                 }
               ],
@@ -102,7 +117,7 @@ jobs:
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*${{ github.event.pull_request.merged_by.login }}*  ✅ merged a pull request"
+                          "text": "*${{ github.event.pull_request.merged_by.login }}*"
                         }
                       ]
                     },
@@ -120,7 +135,7 @@ jobs:
                           "type": "button",
                           "text": {
                             "type": "plain_text",
-                            "text": "🔗 View on GitHub"
+                            "text": "View PR"
                           },
                           "url": "${{ github.event.pull_request.html_url }}"
                         }
