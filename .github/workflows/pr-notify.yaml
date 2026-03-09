@@ -18,35 +18,62 @@ jobs:
             {
               "blocks": [
                 {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "🟡 PR Opened"
-                  }
-                },
-                {
-                  "type": "section",
-                  "fields": [
+                  "type": "context",
+                  "elements": [
                     {
-                      "type": "mrkdwn",
-                      "text": "*タイトル*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                      "type": "image",
+                      "image_url": "${{ github.event.pull_request.user.avatar_url }}",
+                      "alt_text": "${{ github.event.pull_request.user.login }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*作成者*\n${{ github.event.pull_request.user.login }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*マージ先*\n`${{ github.event.pull_request.base.ref }}`"
+                      "text": "Pull request opened by *<${{ github.event.pull_request.user.html_url }}|${{ github.event.pull_request.user.login }}>*"
                     }
                   ]
-                },
+                }
+              ],
+              "attachments": [
                 {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "<@[PM_MEMBERID]>"
-                  }
+                  "color": "#0075ff",
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Branch*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Changes*\n${{ github.event.pull_request.changed_files }} files  `+${{ github.event.pull_request.additions }}  -${{ github.event.pull_request.deletions }}`"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*Reviewer*\n<@U0AJV6A54JU>"
+                      }
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                        {
+                          "type": "button",
+                          "text": { "type": "plain_text", "text": "Review" },
+                          "url": "${{ github.event.pull_request.html_url }}"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -64,35 +91,55 @@ jobs:
             {
               "blocks": [
                 {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "✅ PR Merged"
-                  }
-                },
-                {
-                  "type": "section",
-                  "fields": [
+                  "type": "context",
+                  "elements": [
                     {
-                      "type": "mrkdwn",
-                      "text": "*タイトル*\n<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>"
+                      "type": "image",
+                      "image_url": "${{ github.event.pull_request.merged_by.avatar_url }}",
+                      "alt_text": "${{ github.event.pull_request.merged_by.login }}"
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*マージした人*\n${{ github.event.pull_request.merged_by.login }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*マージ先*\n`${{ github.event.pull_request.base.ref }}`"
+                      "text": "Pull request merged by *<${{ github.event.pull_request.merged_by.html_url }}|${{ github.event.pull_request.merged_by.login }}>*"
                     }
                   ]
-                },
+                }
+              ],
+              "attachments": [
                 {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "<@[MEMBERID_1]> <@[MEMBERID_2]> <@[MEMBERID_3]>"
-                  }
+                  "color": "#8250df",
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Branch*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Changes*\n`+${{ github.event.pull_request.additions }}  -${{ github.event.pull_request.deletions }}`"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                        {
+                          "type": "button",
+                          "text": { "type": "plain_text", "text": "View PR" },
+                          "url": "${{ github.event.pull_request.html_url }}"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
