@@ -14,12 +14,16 @@ jobs:
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
           REVIEWERS_JSON: ${{ toJSON(github.event.pull_request.requested_reviewers) }}
+          LABELS_JSON: ${{ toJSON(github.event.pull_request.labels) }}
         run: |
           body=$(echo "$PR_BODY" | head -c 280 | tr '\n\r' '  ' | sed 's/"/\\"/g')
           echo "body=${body:-(説明なし)}" >> $GITHUB_OUTPUT
 
           reviewers=$(echo "$REVIEWERS_JSON" | jq -r '[.[].login | "<https://github.com/\(.)|@\(.)>"] | join(", ")')
           echo "reviewers=${reviewers:-(なし)}" >> $GITHUB_OUTPUT
+
+          labels=$(echo "$LABELS_JSON" | jq -r '[.[].name] | join(", ")')
+          echo "labels=${labels:-(なし)}" >> $GITHUB_OUTPUT
 
       - name: Send Slack Notification (PR Opened)
         uses: slackapi/slack-github-action@v2.0.0
@@ -30,11 +34,18 @@ jobs:
             {
               "blocks": [
                 {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "<@U0AJV6A54JU>  *${{ github.event.pull_request.user.login }}* created pull request <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }}>"
-                  }
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "image",
+                      "image_url": "${{ github.event.pull_request.user.avatar_url }}",
+                      "alt_text": "${{ github.event.pull_request.user.login }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "<@U0AJV6A54JU>  Pull request opened by *<${{ github.event.pull_request.user.html_url }}|${{ github.event.pull_request.user.login }}>*"
+                    }
+                  ]
                 }
               ],
               "attachments": [
@@ -42,46 +53,31 @@ jobs:
                   "color": "#0075ff",
                   "blocks": [
                     {
-                      "type": "context",
-                      "elements": [
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "${{ steps.vars.outputs.body }}"
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
                         {
-                          "type": "image",
-                          "image_url": "${{ github.event.pull_request.user.avatar_url }}",
-                          "alt_text": "${{ github.event.pull_request.user.login }}"
+                          "type": "mrkdwn",
+                          "text": "*Reviewers*\n${{ steps.vars.outputs.reviewers }}"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*${{ github.event.pull_request.user.login }}*"
+                          "text": "*Labels*\n${{ steps.vars.outputs.labels }}"
                         }
                       ]
-                    },
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "*<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>*"
-                      }
-                    },
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
-                      }
-                    },
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "*Description*\n${{ steps.vars.outputs.body }}"
-                      }
-                    },
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "*Reviewers*\n${{ steps.vars.outputs.reviewers }}"
-                      }
                     },
                     {
                       "type": "context",
@@ -102,7 +98,7 @@ jobs:
                             "text": "Review"
                           },
                           "url": "${{ github.event.pull_request.html_url }}"
-                        },
+                        }
                       ]
                     }
                   ]
@@ -123,11 +119,18 @@ jobs:
             {
               "blocks": [
                 {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "<@U0AJV6A54JU> <@U0AJV6A54JU> <@U0AJV6A54JU>  *${{ github.event.pull_request.merged_by.login }}* merged pull request <${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }}>"
-                  }
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "image",
+                      "image_url": "${{ github.event.pull_request.merged_by.avatar_url }}",
+                      "alt_text": "${{ github.event.pull_request.merged_by.login }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "<@U0AJV6A54JU>  Pull request merged by *<${{ github.event.pull_request.merged_by.html_url }}|${{ github.event.pull_request.merged_by.login }}>*"
+                    }
+                  ]
                 }
               ],
               "attachments": [
@@ -135,24 +138,10 @@ jobs:
                   "color": "#8250df",
                   "blocks": [
                     {
-                      "type": "context",
-                      "elements": [
-                        {
-                          "type": "image",
-                          "image_url": "${{ github.event.pull_request.merged_by.avatar_url }}",
-                          "alt_text": "${{ github.event.pull_request.merged_by.login }}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*${{ github.event.pull_request.merged_by.login }}*"
-                        }
-                      ]
-                    },
-                    {
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*<${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}>*"
+                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*"
                       }
                     },
                     {
