@@ -43,11 +43,25 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*作成者*\n${{ github.event.pull_request.user.login }}"
+                      "text": "*作成者*"
                     },
                     {
                       "type": "mrkdwn",
                       "text": "*マージ先*\n`${{ github.event.pull_request.base.ref }}`"
+                    }
+                  ]
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "image",
+                      "image_url": "${{ github.event.pull_request.user.avatar_url }}",
+                      "alt_text": "${{ github.event.pull_request.user.login }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "${{ github.event.pull_request.user.login }}"
                     }
                   ]
                 },
@@ -58,7 +72,7 @@ jobs:
                       "type": "button",
                       "text": {
                         "type": "plain_text",
-                        "text": "View on GitHub"
+                        "text": "🔗 View on GitHub"
                       },
                       "url": "${{ github.event.pull_request.html_url }}"
                     }
@@ -105,11 +119,25 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*マージした人*\n${{ github.event.pull_request.merged_by.login }}"
+                      "text": "*マージした人*"
                     },
                     {
                       "type": "mrkdwn",
                       "text": "*マージ先*\n`${{ github.event.pull_request.base.ref }}`"
+                    }
+                  ]
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "image",
+                      "image_url": "${{ github.event.pull_request.merged_by.avatar_url }}",
+                      "alt_text": "${{ github.event.pull_request.merged_by.login }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "${{ github.event.pull_request.merged_by.login }}"
                     }
                   ]
                 },
@@ -120,7 +148,7 @@ jobs:
                       "type": "button",
                       "text": {
                         "type": "plain_text",
-                        "text": "View on GitHub"
+                        "text": "🔗 View on GitHub"
                       },
                       "url": "${{ github.event.pull_request.html_url }}"
                     }
