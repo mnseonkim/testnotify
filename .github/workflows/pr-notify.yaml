@@ -9,11 +9,10 @@ jobs:
     if: github.event.action == 'opened'
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare PR data
+      - name: Prepare PR body
         id: vars
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
-          REVIEWERS_JSON: ${{ toJSON(github.event.pull_request.requested_reviewers) }}
         run: |
           body=$(echo "$PR_BODY" | \
             sed 's/\*\*\([^*]*\)\*\*/*\1*/g' | \
@@ -26,9 +25,6 @@ jobs:
             sed 's/  */ /g' | \
             sed 's/"/\\"/g')
           echo "body=${body:-(説明なし)}" >> $GITHUB_OUTPUT
-
-          reviewers=$(echo "$REVIEWERS_JSON" | jq -r 'map("<https://github.com/\(.login)|@\(.login)>") | join(", ")')
-          echo "reviewers=${reviewers:-(なし)}" >> $GITHUB_OUTPUT
 
       - name: Send Slack Notification (PR Opened)
         uses: slackapi/slack-github-action@v2.0.0
@@ -61,21 +57,7 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*"
-                      }
-                    },
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "${{ steps.vars.outputs.body }}"
-                      }
-                    },
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "*Reviewers*\n<@U0AJV6A54JU>  ${{ steps.vars.outputs.reviewers }}"
+                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*\n${{ steps.vars.outputs.body }}"
                       }
                     },
                     {
@@ -83,10 +65,7 @@ jobs:
                       "elements": [
                         {
                           "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "Review"
-                          },
+                          "text": { "type": "plain_text", "text": "Review" },
                           "url": "${{ github.event.pull_request.html_url }}"
                         }
                       ]
@@ -118,7 +97,7 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "<@U0AJV6A54JU>  Pull request merged by *<${{ github.event.pull_request.merged_by.html_url }}|${{ github.event.pull_request.merged_by.login }}>*"
+                      "text": "Pull request merged by *<${{ github.event.pull_request.merged_by.html_url }}|${{ github.event.pull_request.merged_by.login }}>*"
                     }
                   ]
                 }
@@ -131,14 +110,7 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*"
-                      }
-                    },
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
+                        "text": "*<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>*\n`${{ github.event.pull_request.head.ref }}` → `${{ github.event.pull_request.base.ref }}`"
                       }
                     },
                     {
@@ -146,10 +118,7 @@ jobs:
                       "elements": [
                         {
                           "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "View PR"
-                          },
+                          "text": { "type": "plain_text", "text": "View PR" },
                           "url": "${{ github.event.pull_request.html_url }}"
                         }
                       ]
