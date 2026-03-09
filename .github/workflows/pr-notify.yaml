@@ -48,7 +48,7 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "<@U0AJV6A54JU>  Pull request opened by *<${{ github.event.pull_request.user.html_url }}|${{ github.event.pull_request.user.login }}>*"
+                      "text": "Pull request opened by *<${{ github.event.pull_request.user.html_url }}|${{ github.event.pull_request.user.login }}>*"
                     }
                   ]
                 }
@@ -75,7 +75,7 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "*Reviewers*\n${{ steps.vars.outputs.reviewers }}"
+                        "text": "*Reviewers*\n<@U0AJV6A54JU>  ${{ steps.vars.outputs.reviewers }}"
                       }
                     },
                     {
